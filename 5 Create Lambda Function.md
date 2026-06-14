@@ -330,7 +330,7 @@ lambda_function.py
 Paste:
 
 ```python
-import json
+```python
 import boto3
 import os
 
@@ -343,6 +343,9 @@ def lambda_handler(event, context):
     detail = event.get('detail', {})
 
     event_name = detail.get('eventName', 'Unknown')
+    service = detail.get('eventSource', 'Unknown')
+    region = detail.get('awsRegion', 'Unknown')
+    event_time = detail.get('eventTime', 'Unknown')
 
     action = "Modified"
 
@@ -353,25 +356,26 @@ def lambda_handler(event, context):
         action = "Deleted"
 
     message = f"""
-AWS Resource Notification
+AWS Resource Alert
 
-Action  : {action}
-Service : {detail.get('eventSource', 'N/A')}
-Event   : {event_name}
-Region  : {detail.get('awsRegion', 'N/A')}
-Time    : {detail.get('eventTime', 'N/A')}
+Action : {action}
+Service : {service}
+Event : {event_name}
+Region : {region}
+Time : {event_time}
 """
 
     sns.publish(
         TopicArn=TOPIC_ARN,
-        Subject='AWS Resource Notification',
+        Subject='AWS Resource Alert',
         Message=message
     )
 
     return {
-        'statusCode': 200,
-        'body': 'Notification Sent Successfully'
+        'statusCode': 200
     }
+```
+
 ```
 
 ---
